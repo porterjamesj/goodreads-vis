@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { AreaChart, LineChart } from 'react-d3';
+import $ from 'jquery';
 
 export default class App extends Component {
   render() {
@@ -24,7 +25,34 @@ const areaData = [
   }
 ];
 
+
 class GoodreadsViz extends Component {
+
+  constructor () {
+    super();
+    this.state = {
+      data: null
+    };
+  }
+
+  componentWillMount () {
+      $.ajax({
+        url: "http://goodreads-api.jamesporter.me/review/list/51772290.xml",
+        dataType: 'xml',
+        timeout: 3000,
+        data: {
+          v: "2"
+        },
+        success: function(data) {
+          console.log(data);
+          this.setState({data: data});
+        }.bind(this),
+        error: function(xhr, status, err) {
+          console.error("error querying goodreads", status, err.toString());
+        }.bind(this)
+      });
+  }
+
   render () {
     return (
       <AreaChart data={areaData}
