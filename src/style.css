@@ -1,3 +1,21 @@
 .react-spinner_bar {
     background-color: black;
 }
+
+.pagesOverTimePlot {
+    margin-left: 200px;
+    padding-left: 200px;
+}
+
+.rotate {
+    /* Safari */
+    -webkit-transform: rotate(-90deg);
+    /* Firefox */
+    -moz-transform: rotate(-90deg);
+    /* IE */
+    -ms-transform: rotate(-90deg);
+    /* Opera */
+    -o-transform: rotate(-90deg);
+    /* Internet Explorer */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}

@@ -17,7 +17,7 @@ export default class App extends Component {
   }
 }
 
-const PAGE_SIZE = 100;
+const PAGE_SIZE = 20;
 
 function pageRequester(url) {
   return function (page) {
@@ -50,7 +50,7 @@ function loadUserReviews(userId) {
     return Q.all(range(totalPages).map((i) => i+1).map((i) => requestPage(i)));
   }).then(function (datas) {
     return flatten(datas.map((d) => Array.prototype.slice.call(d.querySelectorAll("review"))));
-  });
+  }, function (datas) { debugger; });
 }
 
 function getReviewDate(review) {
@@ -77,7 +77,7 @@ class GoodreadsViz extends Component {
   }
 
   componentWillMount () {
-    loadUserReviews("51772290")
+    loadUserReviews("14278737")
       .done((reviews) => this.setState({reviews: reviews}));
   }
 
@@ -115,11 +115,12 @@ class GoodreadsViz extends Component {
         <XYPlot
            width={600}
            height={300}
-           yDomain={[0, this.pagesRead() + 100]}>
+           margin={{left: 60, bottom: 60, right: 60, top: 60}}
+           yDomain={[0, Math.floor(1.1 * this.pagesRead())]}>
           <XAxis
             labelFormat={(v) => moment(new Date(v)).format('YYYY/MM/DD')}
             title="Date"
-            />
+          />
           <YAxis title="Pages" />
           <VerticalGridLines />
           <HorizontalGridLines />
