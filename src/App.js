@@ -16,8 +16,13 @@ export default class App extends Component {
   handleKeyPress (e) {
     if (e.key == "Enter") {
       let userId = e.target.value;
-      this.setState({userId: userId});
-      loadUserReviews(userId).done((reviews) => this.setState({
+      this.setState({
+        userId: userId,
+        loading: true
+      });
+      loadUserReviews(userId).finally((reviews) => this.setState({
+        loading: false
+      })).done((reviews) => this.setState({
         reviews: reviews
       }));
     }
@@ -27,7 +32,10 @@ export default class App extends Component {
     return (
       <div>
         <h1>Goodreads Visualizer</h1>
-        <span> Enter a Goodreads user id and whack enter: <input type="text"  onKeyPress={this.handleKeyPress} /></span>
+        <span>
+          Enter a Goodreads user id and whack enter: <input type="text"  onKeyPress={this.handleKeyPress}/>
+          {this.state.loading ? <Spinner/> : null }
+        </span>
         <GoodreadsViz reviews={this.state.reviews} />
       </div>
     );
