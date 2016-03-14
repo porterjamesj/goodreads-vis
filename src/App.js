@@ -7,11 +7,29 @@ import moment from 'moment';
 import Spinner from 'react-spinner';
 
 export default class App extends Component {
+
+  constructor () {
+    super();
+    this.state = {userId: null};
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+  }
+
+  handleKeyPress (e) {
+    if (e.key == "Enter") {
+      let userId = e.target.value;
+      this.setState({userId: userId});
+      loadUserReviews(userId).done((reviews) => this.setState({
+        reviews: reviews
+      }));
+    }
+  }
+
   render() {
     return (
       <div>
         <h1>Goodreads Visualizer</h1>
-        <GoodreadsViz/>
+        <span> Enter a Goodreads user id and whack enter: <input type="text"  onKeyPress={this.handleKeyPress} /></span>
+        <GoodreadsViz reviews={this.state.reviews} />
       </div>
     );
   }
@@ -50,11 +68,19 @@ function loadUserReviews(userId) {
     return Q.all(range(totalPages).map((i) => i+1).map((i) => requestPage(i)));
   }).then(function (datas) {
     return flatten(datas.map((d) => Array.prototype.slice.call(d.querySelectorAll("review"))));
-  }, function (datas) { debugger; });
+  });
+}
+
+function extractField(review, field) {
+  return review.querySelector(field).textContent;
+}
+
+function dateFromField(review, field) {
+  return moment(new Date(extractField(review, field)));
 }
 
 function getReviewDate(review) {
-  return moment(new Date(review.querySelector("read_at").textContent));
+  return dateFromField(review, "read_at");
 }
 
 function BookHint (props) {
@@ -71,30 +97,24 @@ class GoodreadsViz extends Component {
   constructor () {
     super();
     this.state = {
-      reviews: null,
       over: null
     };
   }
 
-  componentWillMount () {
-    loadUserReviews("14278737")
-      .done((reviews) => this.setState({reviews: reviews}));
-  }
-
   // derive data to plot from the review xmls in this.state
   plotData () {
-    if (this.state.reviews) {
-      return this.state.reviews
-        .filter((r) => r.querySelector("read_at").textContent)
+    if (this.props.reviews) {
+      return this.props.reviews
+        .filter((r) => extractField(r, "read_at"))
         .reduce(function (acc, r) {
-          let pages = parseInt(r.querySelector("book num_pages").textContent, 10) || 0;
+          let pages = parseInt(extractField(r, "book num_pages"), 10) || 0;
           let priorPages = acc.length === 0 ? 0 : acc[acc.length-1].y;
           return acc.concat({
             x: getReviewDate(r).valueOf(),
             y: priorPages + pages,
-            imageUrl: r.querySelector("book small_image_url").textContent,
-            linkUrl: r.querySelector("book link").textContent,
-            bookTitle: r.querySelector("book title").textContent
+            imageUrl: extractField(r, "book small_image_url"),
+            linkUrl: extractField(r, "book link"),
+            bookTitle: extractField(r, "book title")
           });
         }, []);
     } else {
@@ -104,22 +124,27 @@ class GoodreadsViz extends Component {
 
   pagesRead() {
     let plotData = this.plotData();
-    return plotData[plotData.length-1].y;
+    if (plotData.length > 0) {
+      return plotData[plotData.length-1].y;
+    } else {
+      return 1000; // ¯\_(ツ)_/¯ as good a number as any
+    }
   }
 
   render () {
-    if (this.state.reviews) {
-      let data = this.plotData();
-      let over = this.state.over;
-      return (
-        <XYPlot
-           width={600}
-           height={300}
-           margin={{left: 60, bottom: 60, right: 60, top: 60}}
-           yDomain={[0, Math.floor(1.1 * this.pagesRead())]}>
-          <XAxis
-            labelFormat={(v) => moment(new Date(v)).format('YYYY/MM/DD')}
-            title="Date"
+    let data = this.plotData();
+    let haveData = data.length > 0;
+    let over = this.state.over;
+    return (
+      <XYPlot
+         animation={{duration: 200}}
+         width={600}
+         height={300}
+         margin={{left: 60, bottom: 60, right: 60, top: 60}}
+         yDomain={[0, Math.floor(1.1 * this.pagesRead())]}>
+        <XAxis
+           labelFormat={(v) => moment(new Date(v)).format('YYYY/MM/DD')}
+           title="Date"
           />
           <YAxis title="Pages" />
           <VerticalGridLines />
@@ -127,13 +152,10 @@ class GoodreadsViz extends Component {
           <LineMarkSeries
              data={data}
              onValueMouseOver={(v) => this.setState({over: v})}
-             onValueMouseOut={() => this.setState({over: null})}
-           />
-          {over ? <BookHint value={over}/> : null}
-        </XYPlot>
-      );
-    } else {
-      return <Spinner/>;
-    }
+            onValueMouseOut={() => this.setState({over: null})}
+            />
+            {over ? <BookHint value={over}/> : null}
+      </XYPlot>
+    );
   }
 }
