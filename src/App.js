@@ -32,10 +32,9 @@ export default class App extends Component {
     return (
       <div>
         <h1>Goodreads Visualizer</h1>
-        <span>
-          Enter a Goodreads user id and whack enter: <input type="text"  onKeyPress={this.handleKeyPress}/>
-          {this.state.loading ? <Spinner/> : null }
-        </span>
+        <span> Enter a Goodreads user id and whack enter: </span>
+        <input type="text"  onKeyPress={this.handleKeyPress}/>
+        {this.state.loading ? <Spinner/> : null }
         <GoodreadsViz reviews={this.state.reviews} />
       </div>
     );
