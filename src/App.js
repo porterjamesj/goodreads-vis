@@ -3,7 +3,6 @@ import { Hint, LineMarkSeries, XYPlot, XAxis, YAxis, VerticalGridLines, Horizont
 import $ from 'jquery';
 import Q from 'q';
 import {range, flatten} from 'lodash';
-import moment from 'moment';
 import Spinner from 'react-spinner';
 
 export default class App extends Component {
@@ -76,7 +75,7 @@ function extractField(review, field) {
 }
 
 function dateFromField(review, field) {
-  return moment(new Date(extractField(review, field)));
+  return new Date(extractField(review, field));
 }
 
 function getReviewDate(review) {
@@ -143,8 +142,8 @@ class GoodreadsViz extends Component {
          margin={{left: 60, bottom: 60, right: 60, top: 60}}
          yDomain={[0, Math.floor(1.1 * this.pagesRead())]}>
         <XAxis
-           labelFormat={(v) => moment(new Date(v)).format('YYYY/MM/DD')}
-           title="Date"
+          xType="time"
+          title="Date"
           />
           <YAxis title="Pages" />
           <VerticalGridLines />
