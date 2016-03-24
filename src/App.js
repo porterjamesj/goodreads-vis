@@ -15,9 +15,9 @@ export default class App extends Component {
     this.state = {userId: null};
     this.alertOptions = {
       offset: 14,
-      position: 'bottom left',
-      theme: 'light',
-      time: 5000,
+      position: 'bottom right',
+      theme: 'dark',
+      time: 3000,
       transition: 'scale'
     };
     this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -46,13 +46,14 @@ export default class App extends Component {
         userId: userId,
         loading: true
       });
-      this.loadUserReviews(userId).catch(
-        (err) => this.msg.error(err.message)
-      ).finally((reviews) => this.setState({
+      this.loadUserReviews(userId).finally((reviews) => this.setState({
         loading: false
-      })).done((reviews) => this.setState({
-        reviews: reviews
-      }));
+      })).then(
+        // it worked!
+        (reviews) => this.setState({reviews: reviews}),
+        // it didn't :(
+        (err) => this.msg.error(err.message)
+      );
     }
   }
 
