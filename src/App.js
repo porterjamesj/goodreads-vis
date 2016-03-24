@@ -16,7 +16,7 @@ export default class App extends Component {
     this.alertOptions = {
       offset: 14,
       position: 'bottom right',
-      theme: 'dark',
+      theme: 'light',
       time: 3000,
       transition: 'scale'
     };
@@ -27,12 +27,9 @@ export default class App extends Component {
   loadUserReviews(userId) {
     let url = `http://goodreads-api.jamesporter.me/review/list/${userId}.xml`;
     let requestPage = pageRequester(url);
-    console.log("making initial request to figure out how many pages there are");
     return requestPage(1).then(function(data) {
       let totalReviews = parseInt(data.querySelector("reviews").attributes.total.value, 10);
       let totalPages = Math.ceil(totalReviews/PAGE_SIZE);
-      console.log(`total pages: ${totalPages}`);
-      console.log("making requests for all pages");
       return Q.all(range(totalPages).map((i) => i+1).map((i) => requestPage(i)));
     }).then(function (datas) {
       return flatten(datas.map((d) => Array.prototype.slice.call(d.querySelectorAll("review"))));
@@ -58,11 +55,8 @@ export default class App extends Component {
   }
 
   render() {
-    let spinnerStyle = {};
+    let spinnerStyle = !this.state.loading ? {visibility: "hidden"} : {};
     let alertOptions = this.alertOptions;
-    if (!this.state.loading) {
-      spinnerStyle["visibility"] = "hidden";
-    }
     return (
       <div>
         <h1>Goodreads Visualizer</h1>
@@ -125,7 +119,8 @@ function BookHint (props) {
   return (
     <Hint {...props}>
       <div className="rv-hint__content">
-        <img src={props.value.imageUrl}/>
+        <img src={props.value.imageUrl} className="book-image" />
+        <div>{props.value.bookTitle}</div>
       </div>
     </Hint>
   );
@@ -190,7 +185,7 @@ class GoodreadsViz extends Component {
           <LineMarkSeries
              data={data}
              onValueMouseOver={(v) => this.setState({over: v})}
-            onValueMouseOut={() => this.setState({over: null})}
+            onValueMouseOut={(v) => this.setState({over: null})}
             />
             {over ? <BookHint value={over}/> : null}
       </XYPlot>
