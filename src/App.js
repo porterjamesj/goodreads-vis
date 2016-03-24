@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import AlertContainer from 'react-alert';
 import { Hint, LineMarkSeries, XYPlot, XAxis, YAxis, VerticalGridLines, HorizontalGridLines, GridLines } from 'react-vis';
-import $ from 'jquery';
 import Q from 'q';
+import Prolyfill from 'prolyfill';
+Prolyfill(Q);
+import 'whatwg-fetch';
 import {range, flatten} from 'lodash';
 import Spinner from 'react-spinner';
 
@@ -10,7 +13,30 @@ export default class App extends Component {
   constructor () {
     super();
     this.state = {userId: null};
+    this.alertOptions = {
+      offset: 14,
+      position: 'bottom left',
+      theme: 'light',
+      time: 5000,
+      transition: 'scale'
+    };
     this.handleKeyPress = this.handleKeyPress.bind(this);
+  }
+
+  // return a promise for all of the users's reviews from goodreads
+  loadUserReviews(userId) {
+    let url = `http://goodreads-api.jamesporter.me/review/list/${userId}.xml`;
+    let requestPage = pageRequester(url);
+    console.log("making initial request to figure out how many pages there are");
+    return requestPage(1).then(function(data) {
+      let totalReviews = parseInt(data.querySelector("reviews").attributes.total.value, 10);
+      let totalPages = Math.ceil(totalReviews/PAGE_SIZE);
+      console.log(`total pages: ${totalPages}`);
+      console.log("making requests for all pages");
+      return Q.all(range(totalPages).map((i) => i+1).map((i) => requestPage(i)));
+    }).then(function (datas) {
+      return flatten(datas.map((d) => Array.prototype.slice.call(d.querySelectorAll("review"))));
+    });
   }
 
   handleKeyPress (e) {
@@ -20,7 +46,9 @@ export default class App extends Component {
         userId: userId,
         loading: true
       });
-      loadUserReviews(userId).finally((reviews) => this.setState({
+      this.loadUserReviews(userId).catch(
+        (err) => this.msg.error(err.message)
+      ).finally((reviews) => this.setState({
         loading: false
       })).done((reviews) => this.setState({
         reviews: reviews
@@ -29,15 +57,21 @@ export default class App extends Component {
   }
 
   render() {
+    let spinnerStyle = {};
+    let alertOptions = this.alertOptions;
+    if (!this.state.loading) {
+      spinnerStyle["visibility"] = "hidden";
+    }
     return (
       <div>
         <h1>Goodreads Visualizer</h1>
         <div className="input-container">
           <span> Enter a Goodreads user id and whack enter: </span>
           <input type="text" onKeyPress={this.handleKeyPress}/>
-          {this.state.loading ? <Spinner className="my-react-spinner"/> : null }
+          <Spinner style={spinnerStyle} className="my-react-spinner"/>
         </div>
         <GoodreadsViz reviews={this.state.reviews} />
+        <AlertContainer ref={(ac) => this.msg = ac} {...alertOptions} />
       </div>
     );
   }
@@ -45,38 +79,33 @@ export default class App extends Component {
 
 const PAGE_SIZE = 20;
 
+function queryStringSerialize(args) {
+  return "?" + Object.keys(args).map(
+    (k) => `${k}=${args[k]}`
+  ).join("&");
+}
+
 function pageRequester(url) {
   return function (page) {
-    return Q($.ajax({
-      url: url,
-      dataType: 'xml',
-      timeout: 3000,
-      data: {
+    let queryString = queryStringSerialize({
         v: "2",
         per_page: PAGE_SIZE,
         page: page,
         sort: "date_read",
         order: "a"
+      });
+    return Q(fetch(url+queryString)).then(function(resp) {
+      // handle errors
+      if (!resp.ok) {
+        throw new Error(`Request failed with status ${resp.status}`);
+      } else {
+        return resp.text();
       }
-    }));
+    }).then(function (text) {
+      let parser = new window.DOMParser();
+      return parser.parseFromString(text, "text/xml");
+   });
   };
-}
-
-// return a promise for all of the users's reviews from goodreads
-function loadUserReviews(userId) {
-  let url = `http://goodreads-api.jamesporter.me/review/list/${userId}.xml`;
-  let requestPage = pageRequester(url);
-  console.log("making initial request to figure out how many pages there are");
-  return requestPage(1).then(function (data) {
-    console.log(data);
-    let totalReviews = parseInt(data.querySelector("reviews").attributes.total.value, 10);
-    let totalPages = Math.ceil(totalReviews/PAGE_SIZE);
-    console.log(`total pages: ${totalPages}`);
-    console.log("making requests for all pages");
-    return Q.all(range(totalPages).map((i) => i+1).map((i) => requestPage(i)));
-  }).then(function (datas) {
-    return flatten(datas.map((d) => Array.prototype.slice.call(d.querySelectorAll("review"))));
-  });
 }
 
 function extractField(review, field) {
