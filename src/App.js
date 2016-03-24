@@ -58,14 +58,15 @@ export default class App extends Component {
     let spinnerStyle = !this.state.loading ? {visibility: "hidden"} : {};
     let alertOptions = this.alertOptions;
     return (
-      <div>
+      <div className="big-container">
         <h1>Goodreads Visualizer</h1>
         <div className="input-container">
           <span> Enter a Goodreads user id and whack enter: </span>
           <input type="text" onKeyPress={this.handleKeyPress}/>
           <Spinner style={spinnerStyle} className="my-react-spinner"/>
         </div>
-        <GoodreadsViz reviews={this.state.reviews} />
+        <h2>Pages Read vs. Time</h2>
+        <PagesVsTimePlot reviews={this.state.reviews} />
         <AlertContainer ref={(ac) => this.msg = ac} {...alertOptions} />
       </div>
     );
@@ -126,7 +127,7 @@ function BookHint (props) {
   );
 }
 
-class GoodreadsViz extends Component {
+class PagesVsTimePlot extends Component {
   constructor () {
     super();
     this.state = {
@@ -166,19 +167,16 @@ class GoodreadsViz extends Component {
 
   render () {
     let data = this.plotData();
-    let haveData = data.length > 0;
     let over = this.state.over;
-    return (
-      <XYPlot
-         animation={{duration: 200}}
-         width={600}
-         height={300}
-         margin={{left: 60, bottom: 60, right: 60, top: 60}}
-         yDomain={[0, Math.floor(1.1 * this.pagesRead())]}>
-        <XAxis
-          xType="time"
-          title="Date"
-          />
+    if (data.length > 0) {
+      return (
+        <XYPlot
+           animation={{duration: 200}}
+           width={1000}
+           height={500}
+           margin={{left: 60, bottom: 60, right: 60, top: 0}}
+           yDomain={[0, Math.floor(1.1 * this.pagesRead())]}>
+          <XAxis xType="time" title="Date" />
           <YAxis title="Pages" />
           <VerticalGridLines />
           <HorizontalGridLines />
@@ -188,7 +186,10 @@ class GoodreadsViz extends Component {
             onValueMouseOut={(v) => this.setState({over: null})}
             />
             {over ? <BookHint value={over}/> : null}
-      </XYPlot>
-    );
+        </XYPlot>
+      );
+    } else {
+      return <div className="plot-placeholder">No data</div>;
+    }
   }
 }

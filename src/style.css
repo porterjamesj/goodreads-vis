@@ -1,9 +1,25 @@
+body {
+    background-color: #f7f7f7;
+    font-family: sans-serif;
+    text-align: center;
+}
+
+h2 {
+    margin-below: 10px;
+    margin-above: 0;
+}
+
+.big-container {
+    display: inline-block;
+}
+
 .input-container {
-    width: 428px;
+    width: 485px;
+    margin: auto;
 }
 
 .my-react-spinner {
-    top: -8px;
+    top: -9px;
     left: 100%;
 }
 
@@ -24,4 +40,9 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+.plot-placeholder {
+    color: #686868;
+    font-size: 12px;
 }
