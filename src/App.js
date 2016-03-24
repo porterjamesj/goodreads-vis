@@ -158,11 +158,7 @@ class PagesVsTimePlot extends Component {
 
   pagesRead() {
     let plotData = this.plotData();
-    if (plotData.length > 0) {
-      return plotData[plotData.length-1].y;
-    } else {
-      return 1000; // ¯\_(ツ)_/¯ as good a number as any
-    }
+    return plotData[plotData.length-1].y;
   }
 
   render () {
