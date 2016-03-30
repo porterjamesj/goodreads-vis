@@ -6,7 +6,9 @@ import Q from 'q';
 import Prolyfill from 'prolyfill';
 Prolyfill(Q);
 import 'whatwg-fetch';
-import {range, flatten} from 'lodash';
+import flatten from 'lodash/flatten';
+import range from 'lodash/range';
+import isNil from 'lodash/isNil';
 import Spinner from 'react-spinner';
 
 
@@ -58,6 +60,8 @@ export class Plots extends Component {
     });
   }
 
+  // make a request for the users reviews while manipulating the
+  // loading spinner, &c.
   loadUserReviews(userId) {
       this.setState({
         loading: true
@@ -80,7 +84,7 @@ export class Plots extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.params.userId !== prevProps.params.userId) {
+    if (this.props.params.userId && this.props.params.userId !== prevProps.params.userId) {
       this.loadUserReviews(this.props.params.userId);
     }
   }
@@ -89,20 +93,19 @@ export class Plots extends Component {
     if (e.key == "Enter") {
       // navigate to the page for this user
       let userId = e.target.value;
-      hashHistory.push(`/${userId}/`);
+      hashHistory.push(`/${userId}`);
     }
   }
 
   render() {
-    let spinnerStyle = !this.state.loading ? {visibility: "hidden"} : {};
     let alertOptions = this.alertOptions;
     return (
       <div>
-        <div className="input-container">
-          <span> Enter a Goodreads user id and whack enter: </span>
-          <input type="text" defaultValue={this.props.params.userId} onKeyPress={this.handleKeyPress}/>
-          <Spinner style={spinnerStyle} className="my-react-spinner"/>
-        </div>
+        <UserIdInput
+           loading={this.state.loading}
+           userId={this.props.params.userId}
+           onKeyPress={this.handleKeyPress}
+           />
         <h2>Pages Read vs. Time</h2>
         <PagesVsTimePlot reviews={this.state.reviews} />
         <AlertContainer ref={(ac) => this.msg = ac} {...alertOptions} />
@@ -112,6 +115,32 @@ export class Plots extends Component {
 }
 
 
+class UserIdInput extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {userId: props.userId};
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({userId: nextProps.userId});
+  }
+
+  render() {
+    let spinnerStyle = !this.props.loading ? {visibility: "hidden"} : {};
+    let value = !isNil(this.state.userId) ? this.state.userId : '';
+    return (
+      <div className="input-container">
+        <span> Enter a Goodreads user id and whack enter: </span>
+        <input type="text" value={this.state.userId}
+               onKeyPress={this.props.onKeyPress}
+               onChange={(e) => this.setState({userId: e.target.value})}/>
+        <Spinner style={spinnerStyle} className="my-react-spinner"/>
+      </div>
+    );
+  }
+
+}
 const PAGE_SIZE = 20;
 
 function queryStringSerialize(args) {
