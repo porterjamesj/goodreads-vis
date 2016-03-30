@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { hashHistory, Router, Route, IndexRoute } from 'react-router';
 import AlertContainer from 'react-alert';
 import { Hint, LineMarkSeries, XYPlot, XAxis, YAxis, VerticalGridLines, HorizontalGridLines, GridLines } from 'react-vis';
 import Q from 'q';
@@ -9,11 +10,31 @@ import {range, flatten} from 'lodash';
 import Spinner from 'react-spinner';
 
 
-export default class App extends Component {
+export function Routes() {
+  return (
+    <Router history={hashHistory}>
+      <Route path="/" component={App}>
+        <IndexRoute component={Plots}/>
+        <Route path="/:userId" component={Plots}></Route>
+      </Route>
+    </Router>
+  );
+}
+
+export function App(props) {
+  return (
+      <div className="big-container">
+        <h1>Goodreads Visualizer!</h1>
+        {props.children}
+      </div>
+  );
+}
+
+export class Plots extends Component {
 
   constructor () {
     super();
-    this.state = {userId: null};
+    this.state = {loading: false};
     this.alertOptions = {
       offset: 14,
       position: 'bottom right',
@@ -25,7 +46,7 @@ export default class App extends Component {
   }
 
   // return a promise for all of the users's reviews from goodreads
-  loadUserReviews(userId) {
+  requestReviews(userId) {
     let url = `http://goodreads-api.jamesporter.me/review/list/${userId}.xml`;
     let requestPage = pageRequester(url);
     return requestPage(1).then(function(data) {
@@ -37,21 +58,38 @@ export default class App extends Component {
     });
   }
 
-  handleKeyPress (e) {
-    if (e.key == "Enter") {
-      let userId = e.target.value;
+  loadUserReviews(userId) {
       this.setState({
-        userId: userId,
         loading: true
       });
-      this.loadUserReviews(userId).finally((reviews) => this.setState({
+      this.requestReviews(userId).finally((reviews) => this.setState({
         loading: false
       })).then(
         // it worked!
         (reviews) => this.setState({reviews: reviews}),
         // it didn't :(
+        // TODO figure out if this is still going to work
         (err) => this.msg.error(err.message)
       );
+    }
+
+  componentWillMount() {
+    if (this.props.params.userId) {
+      this.loadUserReviews(this.props.params.userId);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.params.userId !== prevProps.params.userId) {
+      this.loadUserReviews(this.props.params.userId);
+    }
+  }
+
+  handleKeyPress (e) {
+    if (e.key == "Enter") {
+      // navigate to the page for this user
+      let userId = e.target.value;
+      hashHistory.push(`/${userId}/`);
     }
   }
 
@@ -59,11 +97,10 @@ export default class App extends Component {
     let spinnerStyle = !this.state.loading ? {visibility: "hidden"} : {};
     let alertOptions = this.alertOptions;
     return (
-      <div className="big-container">
-        <h1>Goodreads Visualizer!</h1>
+      <div>
         <div className="input-container">
           <span> Enter a Goodreads user id and whack enter: </span>
-          <input type="text" onKeyPress={this.handleKeyPress}/>
+          <input type="text" defaultValue={this.props.params.userId} onKeyPress={this.handleKeyPress}/>
           <Spinner style={spinnerStyle} className="my-react-spinner"/>
         </div>
         <h2>Pages Read vs. Time</h2>
@@ -73,6 +110,7 @@ export default class App extends Component {
     );
   }
 }
+
 
 const PAGE_SIZE = 20;
 
@@ -127,6 +165,7 @@ function BookHint (props) {
     </Hint>
   );
 }
+
 
 class PagesVsTimePlot extends Component {
   constructor () {
