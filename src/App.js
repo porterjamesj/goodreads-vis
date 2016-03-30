@@ -63,6 +63,7 @@ export class Plots extends Component {
   // make a request for the users reviews while manipulating the
   // loading spinner, &c.
   loadUserReviews(userId) {
+    if (!isNil(userId)) {
       this.setState({
         loading: true
       });
@@ -72,19 +73,19 @@ export class Plots extends Component {
         // it worked!
         (reviews) => this.setState({reviews: reviews}),
         // it didn't :(
-        // TODO figure out if this is still going to work
         (err) => this.msg.error(err.message)
       );
-    }
-
-  componentWillMount() {
-    if (this.props.params.userId) {
-      this.loadUserReviews(this.props.params.userId);
+    } else {
+      this.setState({reviews: null});
     }
   }
 
+  componentWillMount() {
+    this.loadUserReviews(this.props.params.userId);
+  }
+
   componentDidUpdate(prevProps) {
-    if (this.props.params.userId && this.props.params.userId !== prevProps.params.userId) {
+    if (this.props.params.userId !== prevProps.params.userId) {
       this.loadUserReviews(this.props.params.userId);
     }
   }
