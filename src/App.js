@@ -8,6 +8,7 @@ import 'whatwg-fetch';
 import {range, flatten} from 'lodash';
 import Spinner from 'react-spinner';
 
+
 export default class App extends Component {
 
   constructor () {
@@ -59,7 +60,7 @@ export default class App extends Component {
     let alertOptions = this.alertOptions;
     return (
       <div className="big-container">
-        <h1>Goodreads Visualizer</h1>
+        <h1>Goodreads Visualizer!</h1>
         <div className="input-container">
           <span> Enter a Goodreads user id and whack enter: </span>
           <input type="text" onKeyPress={this.handleKeyPress}/>
