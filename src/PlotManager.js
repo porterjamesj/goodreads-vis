@@ -55,16 +55,18 @@ export default class PlotManager extends Component {
         // it worked!
         (userInfo, reviews) => this.setState({
           reviews: reviews,
-          userInfo: userInfo
+          userInfo: userInfo,
+          loading: false
         }),
-        // it didn't :(
+        // it didn't :( flash an error and reset state
         (err) => {
           this.msg.error(err.message);
-          this.setState({reviews: null, userInfo: null});
-        }
-      ).finally((reviews) => this.setState({
-        loading: false
-      })).done();
+          this.setState({
+            reviews: null,
+            userInfo: null,
+            loading: false
+          });
+        }).done();
     } else {
       this.setState({reviews: null, userInfo: null});
     }

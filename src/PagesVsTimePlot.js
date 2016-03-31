@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Hint, LineMarkSeries, XYPlot, XAxis, YAxis, VerticalGridLines, HorizontalGridLines, GridLines } from 'react-vis';
+import { Hint, LineMarkSeries, XYPlot, XAxis, YAxis, VerticalGridLines, HorizontalGridLines } from 'react-vis';
 import {extractField, getReviewDate } from './utils.js';
 
 import BookHint from './BookHint';
