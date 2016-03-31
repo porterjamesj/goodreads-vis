@@ -62,7 +62,7 @@ export default class PagesVsTimePlot extends Component {
         </XYPlot>
       );
     } else {
-      return <div className="plot-placeholder">No data</div>;
+      return <div className="placeholder">Not enough data :(</div>;
     }
     return <div></div>;
   }

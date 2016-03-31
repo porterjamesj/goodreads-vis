@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { hashHistory, Router, Route, IndexRoute } from 'react-router';
 import Q from 'q';
 import Prolyfill from 'prolyfill';
 Prolyfill(Q);
 import 'whatwg-fetch';
 
-import Plots from './Plots';
+import PlotManager from './PlotManager';
 
 
-export function App(props) {
+function App(props) {
   return (
       <div className="big-container">
         <h1>Goodreads Visualizer!</h1>
@@ -21,8 +21,8 @@ export function Routes() {
   return (
     <Router history={hashHistory}>
       <Route path="/" component={App}>
-        <IndexRoute component={Plots}/>
-        <Route path="/:userId" component={Plots}></Route>
+        <IndexRoute component={PlotManager}/>
+        <Route path="/:userId" component={PlotManager}></Route>
       </Route>
     </Router>
   );
