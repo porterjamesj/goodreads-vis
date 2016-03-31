@@ -1,3 +1,6 @@
+import React from 'react';
+import { Hint } from 'react-vis';
+
 export default function BookHint (props) {
   return (
     <Hint {...props}>
