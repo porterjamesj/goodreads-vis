@@ -19,7 +19,24 @@ export function queryStringSerialize(args) {
   ).join("&");
 }
 
-export function pageRequester(url, pageSize) {
+// given a promise for a goodreads response, extract the response xml
+// from it, returning a promise for same (or reject the promise with a
+// relevant error)
+function extractXML(promise) {
+  return promise.then(function(resp) {
+    // handle errors
+    if (!resp.ok) {
+      throw new Error(`Request failed with status ${resp.status}`);
+    } else {
+      return resp.text();
+    }
+  }).then(function (text) {
+    let parser = new window.DOMParser();
+    return parser.parseFromString(text, "text/xml");
+  });
+}
+
+export function reviewPageRequester(url, pageSize) {
   return function (page) {
     let queryString = queryStringSerialize({
         v: "2",
@@ -28,16 +45,12 @@ export function pageRequester(url, pageSize) {
         sort: "date_read",
         order: "a"
       });
-    return Q(fetch(url+queryString)).then(function(resp) {
-      // handle errors
-      if (!resp.ok) {
-        throw new Error(`Request failed with status ${resp.status}`);
-      } else {
-        return resp.text();
-      }
-    }).then(function (text) {
-      let parser = new window.DOMParser();
-      return parser.parseFromString(text, "text/xml");
-   });
+    return extractXML(Q(fetch(url+queryString)));
   };
+}
+
+
+export function requestUserInfo(userId) {
+  let url = `http://goodreads-api.jamesporter.me/user/show/${userId}.xml`;
+  return extractXML(Q(fetch(url)));
 }
