@@ -18,13 +18,14 @@ export default class UserIdInput extends Component {
     let value = !isNil(this.state.userId) ? this.state.userId : '';
     return (
       <div className="input-container">
-        <span> Enter a Goodreads user id and whack enter: </span>
+        <span> Enter a Goodreads user id and whack enter:   </span>
         <input type="text" value={this.state.userId}
                onKeyPress={this.props.onKeyPress}
                onChange={(e) => this.setState({userId: e.target.value})}/>
-        <Spinner style={spinnerStyle} className="my-react-spinner"/>
+          <span className="spinner-container">
+            <Spinner style={spinnerStyle} className="spinner"/>
+          </span>
       </div>
     );
   }
-
 }

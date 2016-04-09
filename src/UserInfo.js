@@ -15,9 +15,9 @@ export default class UserInfo extends Component {
       var imageUrl = "";
     }
     return (
-      <div>
-        <img src={imageUrl}></img>
-        <span>{userName}</span>
+      <div className="user-info">
+        <img className="user-image" src={imageUrl}></img>
+        <span className="user-text">{userName}</span>
       </div>
     );
   }

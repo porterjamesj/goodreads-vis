@@ -14,22 +14,19 @@ h2 {
 }
 
 .input-container {
-    width: 485px;
-    margin: auto;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.my-react-spinner {
-    top: -9px;
-    left: 100%;
+.spinner-container {
+    width: 32px;
+    height: 32px;
 }
 
 .react-spinner_bar {
     background-color: black;
-}
-
-.pagesOverTimePlot {
-    margin-left: 200px;
-    padding-left: 200px;
 }
 
 .book-popup {
@@ -45,4 +42,19 @@ h2 {
 .placeholder {
     color: #686868;
     font-size: 12px;
+    /* margin: 60px; */
+}
+
+.user-info {
+    display: inline-flex;
+    align-items: center;
+}
+
+.user-image {
+    margin-right: 15px;
+}
+
+.user-text {
+    font-size: 1em;
+    font-style: italic;
 }
