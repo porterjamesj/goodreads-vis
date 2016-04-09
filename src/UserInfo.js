@@ -6,7 +6,6 @@ import { extractField } from './utils';
 export default class UserInfo extends Component {
 
   render() {
-    console.log(this.props.info);
     if (this.props.info) {
       var userName = extractField(this.props.info, "user name");
       var imageUrl = extractField(this.props.info, "user small_image_url");
