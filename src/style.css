@@ -20,6 +20,10 @@ h2 {
     justify-content: center;
 }
 
+.input-box {
+    margin-left: 5px;
+}
+
 .spinner-container {
     width: 32px;
     height: 32px;
@@ -39,15 +43,21 @@ h2 {
     margin-right: auto;
 }
 
+.minor {
+    color: #686868;
+    font-size: 12px;
+}
+
 .placeholder {
     color: #686868;
     font-size: 12px;
-    /* margin: 60px; */
+    margin: 60px;
 }
 
 .user-info {
     display: inline-flex;
     align-items: center;
+    margin: 20px;
 }
 
 .user-image {

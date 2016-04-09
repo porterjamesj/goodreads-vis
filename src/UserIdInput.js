@@ -17,14 +17,20 @@ export default class UserIdInput extends Component {
     let spinnerStyle = !this.props.loading ? {visibility: "hidden"} : {};
     let value = !isNil(this.state.userId) ? this.state.userId : '';
     return (
-      <div className="input-container">
-        <span> Enter a Goodreads user id and whack enter:   </span>
-        <input type="text" value={this.state.userId}
-               onKeyPress={this.props.onKeyPress}
-               onChange={(e) => this.setState({userId: e.target.value})}/>
-          <span className="spinner-container">
-            <Spinner style={spinnerStyle} className="spinner"/>
-          </span>
+      <div>
+        <div className="input-container">
+          <span> Enter a Goodreads user id and whack enter:</span>
+          <input className="input-box"
+                 type="text" value={this.state.userId}
+                 onKeyPress={this.props.onKeyPress}
+                 onChange={(e) => this.setState({userId: e.target.value})}/>
+            <span className="spinner-container">
+              <Spinner style={spinnerStyle} className="spinner"/>
+            </span>
+        </div>
+        <div className="minor">
+          (Your user id is the number in the URL on your profile page.)
+        </div>
       </div>
     );
   }
