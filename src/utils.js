@@ -51,6 +51,6 @@ export function reviewPageRequester(url, pageSize) {
 
 
 export function requestUserInfo(userId) {
-  let url = `http://goodreads-api.jamesporter.me/user/show/${userId}.xml`;
+  let url = `https://www.jamesporter.me/goodreads-api/user/show/${userId}.xml`;
   return extractXML(Q(fetch(url)));
 }

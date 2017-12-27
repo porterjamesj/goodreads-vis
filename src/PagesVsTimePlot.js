@@ -4,6 +4,8 @@ import {extractField, getReviewDate } from './utils.js';
 
 import BookHint from './BookHint';
 
+import _ from 'lodash';
+
 export default class PagesVsTimePlot extends Component {
   constructor () {
     super();
@@ -15,8 +17,9 @@ export default class PagesVsTimePlot extends Component {
   // derive data to plot from the review xmls in this.state
   plotData () {
     if (this.props.reviews) {
-      return this.props.reviews
+      return _(this.props.reviews)
         .filter((r) => extractField(r, "read_at"))
+        .sortBy([getReviewDate])
         .reduce(function (acc, r) {
           let pages = parseInt(extractField(r, "book num_pages"), 10) || 0;
           let priorPages = acc.length === 0 ? 0 : acc[acc.length-1].y;
@@ -40,6 +43,7 @@ export default class PagesVsTimePlot extends Component {
 
   render () {
     let data = this.plotData();
+    debugger;
     let over = this.state.over;
     if (data.length > 0) {
       return (

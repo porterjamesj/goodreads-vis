@@ -31,7 +31,7 @@ export default class PlotManager extends Component {
 
   // return a promise for all of the users's reviews from goodreads
   requestReviews(userId) {
-    let url = `http://goodreads-api.jamesporter.me/review/list/${userId}.xml`;
+    let url = `https://www.jamesporter.me/goodreads-api/review/list/${userId}.xml`;
     let requestPage = reviewPageRequester(url, PAGE_SIZE);
     return requestPage(1).then(function(data) {
       let totalReviews = parseInt(data.querySelector("reviews").attributes.total.value, 10);
