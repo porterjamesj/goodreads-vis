@@ -2,6 +2,7 @@
   "name": "goodreads",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://www.jamesporter.me/misc/goodreads-vis",
   "dependencies": {
     "lodash": "^4.17.4",
     "prolyfill": "0.0.2",
