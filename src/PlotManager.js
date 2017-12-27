@@ -47,7 +47,9 @@ class PlotManager extends Component {
   loadUserData(userId) {
     if (!isNil(userId)) {
       this.setState({
-        loading: true
+        loading: true,
+        userInfo: null,
+        reviews: null,
       });
       let reviewsPromise = this.requestReviews(userId);
       let userInfoPromise = requestUserInfo(userId);
