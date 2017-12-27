@@ -15,19 +15,21 @@ module.exports = {
         warnings: false
       }
     }),
-    new webpack.optimize.OccurenceOrderPlugin(),
     new HtmlWebpackPlugin({template: "index.html"})
   ],
   module: {
     loaders: [
       {
         test: /\.js$/,
-        loaders: ['babel'],
+        loaders: ['babel-loader'],
         include: path.join(__dirname, 'src')
       },
       {
         test: /\.css$/,
-        loader: "style!css"
+        use: [
+          { loader: "style-loader" },
+          { loader: "css-loader" }
+        ]
       },
     ]
   }
