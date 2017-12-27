@@ -58,9 +58,10 @@ export default class PagesVsTimePlot extends Component {
           <LineMarkSeries
              data={data}
              onValueMouseOver={(v) => this.setState({over: v})}
-            onValueMouseOut={(v) => this.setState({over: null})}
-            />
-            {over ? <BookHint value={over}/> : null}
+             onValueMouseOut={(v) => this.setState({over: null})}
+             onValueClick={(v) => window.location = v.linkUrl}
+          />
+          {over ? <BookHint value={over}/> : null}
         </XYPlot>
       );
     } else {
