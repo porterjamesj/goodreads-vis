@@ -1,25 +1,29 @@
 # Goodreads Visualizer
 
-Draw graphs (or rather graph) of goodreads activity. See it running
+Draw graphs of goodreads activity. See it running
 live [here](http://jamesporter.me/misc/goodreads-vis/).
+
+For an example plot, see
+[yours truly](https://www.jamesporter.me/misc/goodreads-vis/#/51772290?_k=1d4pox).
 
 ## Development
 
-Clone it, then:
+This uses
+[create-react-app](https://github.com/facebookincubator/create-react-app),
+so just:
 
 ```
 npm install
+```
+
+and then
+
+```
 npm start
-open http://localhost:3000
 ```
 
 ## Production Build
 
-Just do:
-
 ```
 npm run build
 ```
-
-(This just runs webpack with `webpack.config.prod.js`). There'll be
-`bundle.js` and `index.html` in `dist/`.
