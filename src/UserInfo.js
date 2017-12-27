@@ -6,16 +6,17 @@ import { extractField } from './utils';
 export default class UserInfo extends Component {
 
   render() {
-    if (this.props.info) {
-      var userName = extractField(this.props.info, "user name");
-      var imageUrl = extractField(this.props.info, "user small_image_url");
+  let userName, imageUrl;
+  if (this.props.info) {
+      userName = extractField(this.props.info, "user name");
+      imageUrl = extractField(this.props.info, "user small_image_url");
     } else {
-      var userName = "N/A";
-      var imageUrl = "";
+      userName = "N/A";
+      imageUrl = "";
     }
     return (
       <div className="user-info">
-        <img className="user-image" src={imageUrl}></img>
+        <img className="user-image" src={imageUrl} alt="user profile"></img>
         <span className="user-text">{userName}</span>
       </div>
     );

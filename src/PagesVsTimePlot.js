@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Hint, LineMarkSeries, XYPlot, XAxis, YAxis, VerticalGridLines, HorizontalGridLines } from 'react-vis';
-import {extractField, getReviewDate } from './utils.js';
+import { LineMarkSeries, XYPlot, XAxis, YAxis, VerticalGridLines, HorizontalGridLines } from 'react-vis';
+import { extractField, getReviewDate } from './utils.js';
 
 import BookHint from './BookHint';
 
@@ -43,17 +43,15 @@ export default class PagesVsTimePlot extends Component {
 
   render () {
     let data = this.plotData();
-    debugger;
     let over = this.state.over;
     if (data.length > 0) {
       return (
         <XYPlot
-           animation={{duration: 200}}
            width={1000}
            height={500}
            margin={{left: 60, bottom: 60, right: 60, top: 0}}
            yDomain={[0, Math.floor(1.1 * this.pagesRead())]}>
-          <XAxis xType="time" title="Date" />
+          <XAxis xType="time" title="Date" tickLabelAngle={-45} />
           <YAxis title="Pages" />
           <VerticalGridLines />
           <HorizontalGridLines />
@@ -68,6 +66,5 @@ export default class PagesVsTimePlot extends Component {
     } else {
       return <div className="placeholder">Not enough data :(</div>;
     }
-    return <div></div>;
   }
 }

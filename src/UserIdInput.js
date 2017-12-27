@@ -21,7 +21,7 @@ export default class UserIdInput extends Component {
         <div className="input-container">
           <span> Enter a Goodreads user id and whack enter:</span>
           <input className="input-box"
-                 type="text" value={this.state.userId}
+                 type="text" value={value}
                  onKeyPress={this.props.onKeyPress}
                  onChange={(e) => this.setState({userId: e.target.value})}/>
             <span className="spinner-container">

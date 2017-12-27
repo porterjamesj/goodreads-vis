@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { hashHistory } from 'react-router';
+import { withRouter } from 'react-router';
 import AlertContainer from 'react-alert';
 import range from 'lodash/range';
 import isNil from 'lodash/isNil';
@@ -14,7 +14,7 @@ import { reviewPageRequester, requestUserInfo } from './utils';
 const PAGE_SIZE = 20;
 
 
-export default class PlotManager extends Component {
+class PlotManager extends Component {
 
   constructor () {
     super();
@@ -73,20 +73,21 @@ export default class PlotManager extends Component {
   }
 
   componentWillMount() {
-    this.loadUserData(this.props.params.userId);
+    this.loadUserData(this.props.match.params.userId);
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.params.userId !== prevProps.params.userId) {
-      this.loadUserData(this.props.params.userId);
+    if (this.props.match.params.userId !== prevProps.match.params.userId) {
+      this.loadUserData(this.props.match.params.userId);
     }
   }
 
   handleKeyPress (e) {
-    if (!this.state.loading && e.key == "Enter") {
+    if (!this.state.loading && e.key === "Enter") {
       // navigate to the page for this user
       let userId = e.target.value;
-      hashHistory.push(`/${userId}`);
+      // history gets injected via withRouter at the bottom
+      this.props.history.push(`/${userId}`);
     }
   }
 
@@ -101,7 +102,7 @@ export default class PlotManager extends Component {
       <div>
         <UserIdInput
            loading={this.state.loading}
-           userId={this.props.params.userId}
+           userId={this.props.match.params.userId}
            onKeyPress={this.handleKeyPress} />
         {maybePlots}
         <AlertContainer ref={(ac) => this.msg = ac} {...alertOptions} />
@@ -109,3 +110,6 @@ export default class PlotManager extends Component {
     );
   }
 }
+
+
+export default withRouter(PlotManager);
